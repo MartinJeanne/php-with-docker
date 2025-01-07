@@ -1,0 +1,36 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker-img/nginx/Dockerfile
+    ports:
+      - 8080:80
+    networks:
+      - wordpress
+    volumes:
+      - .:/var/www/html/
+      - ./logs/nginx:/var/log/nginx/
+
+  php:
+    build:
+      context: .
+      dockerfile: docker-img/php/Dockerfile
+    networks:
+      - wordpress
+    volumes:
+      - .:/var/www/html/
+      - ./logs/php.log:/var/log/fpm-php.www.log
+
+  db:
+    image: mysql:9
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+    networks:
+      - wordpress
+    ports:
+      - 3306:3306
+
+networks:
+  wordpress:
+    driver: bridge
